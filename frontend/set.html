@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyShare — Набор</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">StudyShare</a>
+      <div class="ms-auto d-flex gap-2 align-items-center" id="nav-auth">
+        <a href="login.html" class="btn btn-outline-secondary btn-sm">Войти</a>
+        <a href="register.html" class="btn btn-accent btn-sm px-3">Регистрация</a>
+      </div>
+      <div class="ms-auto d-flex gap-2 align-items-center" id="nav-user" style="display:none!important">
+        <a href="profile.html" class="btn btn-outline-secondary btn-sm">Мой профиль</a>
+        <button onclick="logout()" class="btn btn-accent btn-sm px-3">Выйти</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Set header -->
+  <div class="set-detail-header" id="set-header">
+    <div class="container">
+      <div class="text-center text-muted py-4">Загрузка...</div>
+    </div>
+  </div>
+
+  <!-- Cards list -->
+  <section class="py-5">
+    <div class="container">
+      <h6 class="fw-semibold mb-3" style="color:var(--text-muted)">Все карточки</h6>
+      <div id="cards-list" class="d-flex flex-column gap-2"></div>
+    </div>
+  </section>
+
+  <footer class="border-top py-4 text-center text-muted small">© 2025 StudyShare</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="api.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const setId = params.get('id');
+
+    if (!setId) window.location.href = 'index.html';
+
+    let cardSet = null;
+    let isLiked = localStorage.getItem('liked_' + setId) === '1';
+
+    async function loadSet() {
+      try {
+        cardSet = await apiRequest('GET', '/sets/' + setId);
+        renderHeader();
+        renderCards();
+      } catch (e) {
+        document.getElementById('set-header').innerHTML =
+          '<div class="container"><div class="alert-error">Набор не найден</div></div>';
+      }
+    }
+
+    function updateLikeBtn() {
+      const btn = document.getElementById('like-btn');
+      if (!btn) return;
+      if (isLiked) {
+        btn.textContent = '❤️ ' + btn.dataset.count;
+        btn.style.borderColor = '#e879f9';
+        btn.style.color = '#a21caf';
+      } else {
+        btn.textContent = '🤍 ' + btn.dataset.count;
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }
+    }
+
+    function renderHeader() {
+      const user = getCurrentUser();
+      const isAuthor = user && user.id === cardSet.author_id;
+
+      document.title = 'StudyShare — ' + cardSet.title;
+
+      document.getElementById('set-header').innerHTML = `
+        <div class="container">
+          <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb small mb-0">
+              <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">Главная</a></li>
+              <li class="breadcrumb-item active">${escapeHtml(cardSet.title)}</li>
+            </ol>
+          </nav>
+          <div class="d-flex justify-content-between align-items-start mt-3 flex-wrap gap-3">
+            <div>
+              <div class="mb-2">
+                <span class="set-card-subject ${getSubjectClass(cardSet.subject)}">${escapeHtml(cardSet.subject)}${cardSet.grade ? ' · ' + escapeHtml(cardSet.grade) : ''}</span>
+              </div>
+              <h1 class="h3 fw-bold mb-1">${escapeHtml(cardSet.title)}</h1>
+              <div class="d-flex align-items-center gap-3 text-muted small flex-wrap">
+                <span>Автор: <strong>@${escapeHtml(cardSet.author_username)}</strong></span>
+                <span>${cardWord(cardSet.cards_count)} карточек</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-outline-secondary btn-sm" id="like-btn" data-count="${cardSet.likes_count}" onclick="toggleLike()" style="${isLiked ? 'border-color:#e879f9;color:#a21caf' : ''}">
+                ${isLiked ? '❤️' : '🤍'} ${cardSet.likes_count}
+              </button>
+              ${isAuthor ? `<a href="create.html?edit=${cardSet.id}" class="btn btn-outline-secondary btn-sm">✏️ Редактировать</a>
+              <button class="btn btn-outline-danger btn-sm" onclick="deleteSet()">🗑 Удалить</button>` : ''}
+              <a href="study.html?id=${cardSet.id}" class="btn btn-accent px-4">Начать</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
+      const list = document.getElementById('cards-list');
+      if (!cardSet.cards || cardSet.cards.length === 0) {
+        list.innerHTML = '<div class="text-muted text-center py-3">Карточек нет</div>';
+        return;
+      }
+      list.innerHTML = cardSet.cards.map((c, i) => `
+        <div class="card-item">
+          <div class="card-item-question">${escapeHtml(c.question)}</div>
+          <div class="card-item-answer">${escapeHtml(c.answer)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function toggleLike() {
+      try {
+        const action = isLiked ? 'remove' : 'add';
+        const res = await apiRequest('POST', '/sets/' + setId + '/favorite', { action });
+        isLiked = !isLiked;
+        localStorage.setItem('liked_' + setId, isLiked ? '1' : '0');
+        const btn = document.getElementById('like-btn');
+        btn.dataset.count = res.likes_count;
+        updateLikeBtn();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function deleteSet() {
+      if (!confirm('Удалить этот набор? Это действие нельзя отменить.')) return;
+      try {
+        await apiRequest('DELETE', '/sets/' + setId);
+        window.location.href = 'profile.html';
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    updateNavbar();
+    loadSet();
+  </script>
+</body>
+</html>

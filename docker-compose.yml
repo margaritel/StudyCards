@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: studyshare_user
+      POSTGRES_PASSWORD: studyshare_pass
+      POSTGRES_DB: studyshare_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "1439:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studyshare_user -d studyshare_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://studyshare_user:studyshare_pass@db:5432/studyshare_db
+    ports:
+      - "5782:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyShare — Изучение</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="index.html">StudyShare</a>
+      <a href="#" id="back-btn" class="btn btn-outline-secondary btn-sm">← К набору</a>
+    </div>
+  </nav>
+
+  <div class="container py-5" style="max-width: 640px;">
+
+    <div id="loading" class="text-center text-muted py-5">Загрузка...</div>
+
+    <div id="study-ui" style="display:none">
+      <!-- Заголовок -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted small fw-medium" id="set-title">...</span>
+        <span class="text-muted small fw-semibold" id="card-counter">1 / 1</span>
+      </div>
+
+      <!-- Прогресс -->
+      <div class="progress mb-4" style="height: 5px;">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+      </div>
+
+      <!-- Карточка -->
+      <div class="study-card mb-4" id="study-card" onclick="flipCard()">
+        <div class="study-card-text" id="card-text">...</div>
+        <div class="study-card-hint" id="card-hint">Нажмите, чтобы увидеть ответ</div>
+      </div>
+
+      <!-- Навигация -->
+      <div class="d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-secondary px-4" id="prev-btn" onclick="prevCard()">← Назад</button>
+        <span class="text-muted small" id="flip-status">Вопрос</span>
+        <button class="btn btn-accent px-4" id="next-btn" onclick="nextCard()">Далее →</button>
+      </div>
+
+      <!-- Финиш -->
+      <div id="finish-block" class="text-center mt-4" style="display:none">
+        <div class="alert-success mb-3">🎉 Вы просмотрели все карточки!</div>
+        <button class="btn btn-outline-secondary me-2" onclick="restart()">Повторить</button>
+        <a href="#" id="back-to-set" class="btn btn-accent">К набору</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const setId = params.get('id');
+    if (!setId) window.location.href = 'index.html';
+
+    document.getElementById('back-btn').href = 'set.html?id=' + setId;
+    document.getElementById('back-to-set').href = 'set.html?id=' + setId;
+
+    let cards = [];
+    let current = 0;
+    let flipped = false;
+
+    async function loadCards() {
+      try {
+        const data = await apiRequest('GET', '/sets/' + setId);
+        cards = data.cards;
+        document.getElementById('set-title').textContent = data.title;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('study-ui').style.display = 'block';
+        render();
+      } catch (e) {
+        document.getElementById('loading').textContent = 'Ошибка загрузки';
+      }
+    }
+
+    function render() {
+      if (cards.length === 0) return;
+
+      const card = cards[current];
+      document.getElementById('card-text').textContent = card.question;
+      document.getElementById('card-hint').textContent = 'Нажмите, чтобы увидеть ответ';
+      document.getElementById('flip-status').textContent = 'Вопрос';
+      document.getElementById('card-counter').textContent = (current + 1) + ' / ' + cards.length;
+      document.getElementById('progress-bar').style.width = ((current + 1) / cards.length * 100) + '%';
+
+      document.getElementById('study-card').classList.remove('flipped');
+      document.getElementById('prev-btn').disabled = current === 0;
+
+      flipped = false;
+
+      // Последняя карточка
+      if (current === cards.length - 1) {
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('finish-block').style.display = 'block';
+      } else {
+        document.getElementById('next-btn').style.display = 'inline-block';
+        document.getElementById('finish-block').style.display = 'none';
+      }
+    }
+
+    function flipCard() {
+      if (!flipped) {
+        document.getElementById('card-text').textContent = cards[current].answer;
+        document.getElementById('card-hint').textContent = 'Нажмите, чтобы вернуть вопрос';
+        document.getElementById('flip-status').textContent = 'Ответ';
+        document.getElementById('study-card').classList.add('flipped');
+        flipped = true;
+      } else {
+        document.getElementById('card-text').textContent = cards[current].question;
+        document.getElementById('card-hint').textContent = 'Нажмите, чтобы увидеть ответ';
+        document.getElementById('flip-status').textContent = 'Вопрос';
+        document.getElementById('study-card').classList.remove('flipped');
+        flipped = false;
+      }
+    }
+
+    function nextCard() {
+      if (current < cards.length - 1) { current++; render(); }
+    }
+
+    function prevCard() {
+      if (current > 0) { current--; render(); }
+    }
+
+    function restart() {
+      current = 0;
+      render();
+    }
+
+    // Клавиши
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') nextCard();
+      if (e.key === 'ArrowLeft') prevCard();
+      if (e.key === ' ') { e.preventDefault(); flipCard(); }
+    });
+
+    loadCards();
+  </script>
+</body>
+</html>

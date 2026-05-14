@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyShare — Регистрация</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">StudyShare</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="auth-card">
+      <h2>Создать аккаунт</h2>
+      <p class="text-muted small mb-4">Это бесплатно и займёт минуту</p>
+
+      <div id="msg"></div>
+
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Имя пользователя</label>
+        <input type="text" class="form-control" id="username" placeholder="username" autocomplete="username">
+        <div class="form-text text-muted">Только буквы, цифры и _</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Пароль</label>
+        <input type="password" class="form-control" id="password" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="mb-4">
+        <label class="form-label small fw-semibold">Подтвердите пароль</label>
+        <input type="password" class="form-control" id="confirm" placeholder="••••••••" autocomplete="new-password">
+      </div>
+
+      <button class="btn btn-accent w-100 mb-3 py-2" id="reg-btn">Зарегистрироваться</button>
+
+      <p class="text-center text-muted small mb-0">
+        Уже есть аккаунт? <a href="login.html" class="fw-semibold" style="color:var(--accent)">Войти</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    if (getCurrentUser()) window.location.href = 'index.html';
+
+    async function doRegister() {
+      hideMessage('msg');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (!username) { showError('msg', 'Введите имя пользователя'); return; }
+      if (username.length < 3) { showError('msg', 'Имя пользователя минимум 3 символа'); return; }
+      if (!password) { showError('msg', 'Введите пароль'); return; }
+      if (password.length < 6) { showError('msg', 'Пароль минимум 6 символов'); return; }
+      if (password !== confirm) { showError('msg', 'Пароли не совпадают'); return; }
+
+      const btn = document.getElementById('reg-btn');
+      btn.disabled = true;
+      btn.textContent = 'Регистрируем...';
+
+      try {
+        const data = await apiRequest('POST', '/auth/register', { username, password, confirm_password: confirm });
+        saveAuth(data.token, data.user);
+        window.location.href = 'index.html';
+      } catch (e) {
+        showError('msg', e.message);
+        btn.disabled = false;
+        btn.textContent = 'Зарегистрироваться';
+      }
+    }
+
+    document.getElementById('reg-btn').addEventListener('click', doRegister);
+    document.getElementById('confirm').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doRegister();
+    });
+  </script>
+</body>
+</html>

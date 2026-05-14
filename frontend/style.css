@@ -1,0 +1,398 @@
+/* ===== Цвета ===== */
+:root {
+  --pastel-blue: #dbeafe;
+  --pastel-purple: #ede9fe;
+  --pastel-green: #dcfce7;
+  --pastel-yellow: #fef9c3;
+  --pastel-pink: #fce7f3;
+  --pastel-orange: #ffedd5;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --text-main: #1e1b4b;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f9fafb;
+  --white: #ffffff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  background: var(--white) !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--accent) !important;
+  letter-spacing: -0.5px;
+}
+
+/* ===== Кнопки ===== */
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-hover);
+  color: white;
+}
+
+/* ===== Hero ===== */
+.hero-section {
+  background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--pastel-purple) 100%);
+  padding: 60px 0 50px;
+}
+
+.search-bar {
+  max-width: 560px;
+}
+
+.search-bar .form-control {
+  border-radius: 10px 0 0 10px;
+  border: 2px solid var(--white);
+  box-shadow: none;
+  font-size: 1rem;
+}
+
+.search-bar .form-control:focus {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+.search-bar .btn {
+  border-radius: 0 10px 10px 0;
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  color: white;
+  font-weight: 600;
+}
+
+/* ===== Фильтры предметов ===== */
+.badge-filter {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  text-decoration: none;
+  background: var(--white);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.badge-filter:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.badge-filter.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* ===== Карточки наборов ===== */
+/* Разные пастельные цвета для предметов */
+.set-card {
+  display: block;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  transition: box-shadow 0.15s, transform 0.15s;
+  height: 100%;
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.set-card:hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.12);
+  transform: translateY(-3px);
+  color: var(--text-main);
+}
+
+.set-card-subject {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Цвета по предметам */
+.subject-math    { background: var(--pastel-blue);   color: #1d4ed8; }
+.subject-history { background: var(--pastel-yellow);  color: #92400e; }
+.subject-english { background: var(--pastel-green);   color: #166534; }
+.subject-biology { background: var(--pastel-green);   color: #166534; }
+.subject-chemistry { background: var(--pastel-orange); color: #9a3412; }
+.subject-physics { background: var(--pastel-blue);   color: #1d4ed8; }
+.subject-social  { background: var(--pastel-pink);   color: #9d174d; }
+.subject-default { background: var(--pastel-purple);  color: #5b21b6; }
+
+.set-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.set-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.set-card-author {
+  font-size: 0.78rem;
+  color: #a5b4fc;
+}
+
+/* ===== Формы авторизации ===== */
+.auth-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 40px;
+  max-width: 420px;
+  margin: 60px auto;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.07);
+}
+
+.auth-card h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: var(--accent);
+}
+
+.form-select:focus {
+  box-shadow: none;
+  border-color: var(--accent);
+}
+
+/* ===== Страница набора ===== */
+.set-detail-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 0 28px;
+}
+
+.card-item {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  gap: 24px;
+}
+
+.card-item-question {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.card-item-answer {
+  flex: 1;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  border-left: 3px solid var(--pastel-purple);
+  padding-left: 20px;
+}
+
+/* ===== Режим изучения ===== */
+.study-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  user-select: none;
+}
+
+.study-card:hover {
+  box-shadow: 0 8px 30px rgba(99,102,241,0.12);
+  border-color: var(--accent);
+}
+
+.study-card.flipped {
+  background: var(--pastel-purple);
+  border-color: var(--accent);
+}
+
+.study-card-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 40px;
+  color: var(--text-main);
+}
+
+.study-card-hint {
+  position: absolute;
+  bottom: 16px;
+  font-size: 0.78rem;
+  color: #a5b4fc;
+}
+
+/* ===== Создание набора ===== */
+.create-card-row {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: border-color 0.15s;
+}
+
+.create-card-row:focus-within {
+  border-color: var(--accent);
+}
+
+/* ===== Профиль ===== */
+.profile-header {
+  background: linear-gradient(135deg, var(--pastel-purple) 0%, var(--pastel-blue) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 0;
+}
+
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tab-nav .nav-link {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 10px 0;
+  margin-right: 28px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+}
+
+.tab-nav .nav-link.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ===== Алерты ===== */
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+}
+
+/* ===== Прогресс бар ===== */
+.progress {
+  border-radius: 10px;
+  background: var(--pastel-purple);
+}
+
+.progress-bar {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+/* ===== Адаптив ===== */
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 40px 0 30px;
+  }
+
+  .hero-section h1 {
+    font-size: 1.6rem;
+  }
+
+  .auth-card {
+    margin: 20px auto;
+    padding: 28px 20px;
+  }
+
+  .study-card-text {
+    font-size: 1.1rem;
+    padding: 24px;
+  }
+
+  .card-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-item-answer {
+    border-left: none;
+    border-top: 3px solid var(--pastel-purple);
+    padding-left: 0;
+    padding-top: 10px;
+  }
+}
+
+/* ===== Кнопка лайка на карточке набора ===== */
+.like-btn-small {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.82rem;
+  color: #9ca3af;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s;
+}
+
+.like-btn-small:hover {
+  color: #a21caf;
+}
+
+.like-btn-small.liked {
+  color: #a21caf;
+}

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Env
+.env
+.env.local
+*.env
+!.env.example
+
+# Build / dist
+dist/
+build/
+node_modules/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OpenCode / agents
+opencode.json
+.opencode/
+.claude/
+
+# Local DB / instance
+instance/
+*.sqlite
+*.db

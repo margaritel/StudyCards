@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyShare — Создать набор</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="index.html">StudyShare</a>
+      <div class="d-flex gap-2">
+        <a href="profile.html" class="btn btn-outline-secondary btn-sm">Отмена</a>
+        <button class="btn btn-accent btn-sm px-4" id="publish-btn">Опубликовать</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5" style="max-width: 720px;">
+    <h2 class="fw-bold mb-4" id="page-title">Новый набор</h2>
+
+    <div id="msg" style="display:none" class="mb-3"></div>
+
+    <!-- Мета набора -->
+    <div class="bg-white border rounded-3 p-4 mb-4">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Название набора</label>
+          <input type="text" class="form-control" id="title" placeholder="Например: Неправильные глаголы">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Предмет</label>
+          <select class="form-select" id="subject">
+            <option value="">Выбрать...</option>
+          </select>
+          <div class="mt-2" id="new-subject-block" style="display:none">
+            <input type="text" class="form-control form-control-sm" id="new-subject-input" placeholder="Название предмета">
+          </div>
+          <div class="mt-1">
+            <a href="#" class="small" style="color:var(--accent)" onclick="toggleNewSubject(event)">+ Добавить новый предмет</a>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Класс</label>
+          <select class="form-select" id="grade">
+            <option value="">Выбрать...</option>
+            <option>5 класс</option>
+            <option>6 класс</option>
+            <option>7 класс</option>
+            <option>8 класс</option>
+            <option>9 класс</option>
+            <option>10 класс</option>
+            <option>11 класс</option>
+            <option>1 курс</option>
+            <option>2 курс</option>
+            <option>3 курс</option>
+            <option>4 курс</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Карточки -->
+    <h6 class="fw-semibold mb-3" style="color:var(--text-muted)">Карточки</h6>
+    <div id="cards-list" class="d-flex flex-column gap-2 mb-3"></div>
+
+    <button class="btn btn-outline-secondary w-100 py-2" onclick="addCard()">+ Добавить карточку</button>
+
+    <div class="mt-4 text-end">
+      <button class="btn btn-accent px-5 py-2" id="publish-btn2">Опубликовать набор</button>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    // Если не залогинен — на логин
+    if (!getCurrentUser()) window.location.href = 'login.html';
+
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('edit');
+    let cardCount = 0;
+
+    // Загружаем предметы из API
+    async function loadSubjects() {
+      try {
+        const subjects = await apiRequest('GET', '/sets/subjects');
+        const select = document.getElementById('subject');
+        select.innerHTML = '<option value="">Выбрать...</option>';
+        subjects.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          select.appendChild(opt);
+        });
+      } catch(e) {
+        // Если не загрузилось — оставляем пустой список
+      }
+    }
+
+    function toggleNewSubject(e) {
+      e.preventDefault();
+      const block = document.getElementById('new-subject-block');
+      const isVisible = block.style.display !== 'none';
+      block.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) {
+        document.getElementById('subject').value = '';
+        document.getElementById('new-subject-input').focus();
+      }
+    }
+
+    function getSelectedSubject() {
+      const newBlock = document.getElementById('new-subject-block');
+      if (newBlock.style.display !== 'none') {
+        return document.getElementById('new-subject-input').value.trim();
+      }
+      return document.getElementById('subject').value;
+    }
+
+    loadSubjects();
+
+    // Режим редактирования
+    if (editId) {
+      document.getElementById('page-title').textContent = 'Редактировать набор';
+      document.getElementById('publish-btn').textContent = 'Сохранить';
+      document.getElementById('publish-btn2').textContent = 'Сохранить изменения';
+      loadForEdit();
+    } else {
+      addCard();
+      addCard();
+    }
+
+    async function loadForEdit() {
+      try {
+        const data = await apiRequest('GET', '/sets/' + editId);
+        document.getElementById('title').value = data.title;
+        document.getElementById('subject').value = data.subject;
+        document.getElementById('grade').value = data.grade || '';
+        data.cards.forEach(c => addCard(c.question, c.answer));
+      } catch (e) {
+        showError('msg', 'Не удалось загрузить набор');
+      }
+    }
+
+    function addCard(question = '', answer = '') {
+      cardCount++;
+      const list = document.getElementById('cards-list');
+      const div = document.createElement('div');
+      div.className = 'create-card-row';
+      div.dataset.index = cardCount;
+      div.innerHTML = `
+        <span class="text-muted small pt-2 fw-semibold" style="min-width:24px;">${cardCount}</span>
+        <div class="flex-grow-1">
+          <input type="text" class="form-control mb-2 card-question" placeholder="Вопрос" value="${escapeAttr(question)}">
+          <input type="text" class="form-control card-answer" placeholder="Ответ" value="${escapeAttr(answer)}">
+        </div>
+        <button class="btn btn-sm text-muted mt-1" onclick="removeCard(this)" title="Удалить карточку">✕</button>
+      `;
+      list.appendChild(div);
+      if (!question) div.querySelector('.card-question').focus();
+    }
+
+    function removeCard(btn) {
+      const rows = document.querySelectorAll('.create-card-row');
+      if (rows.length <= 1) {
+        showError('msg', 'Должна быть хотя бы одна карточка');
+        return;
+      }
+      btn.closest('.create-card-row').remove();
+    }
+
+    function getCardsData() {
+      const rows = document.querySelectorAll('.create-card-row');
+      return Array.from(rows).map(row => ({
+        question: row.querySelector('.card-question').value.trim(),
+        answer: row.querySelector('.card-answer').value.trim()
+      }));
+    }
+
+    async function publish() {
+      hideMessage('msg');
+
+      const title = document.getElementById('title').value.trim();
+      const subject = getSelectedSubject();
+      const grade = document.getElementById('grade').value;
+      const cards = getCardsData();
+
+      if (!title) { showError('msg', 'Введите название набора'); return; }
+      if (!subject) { showError('msg', 'Выберите предмет'); return; }
+      if (!grade) { showError('msg', 'Выберите класс'); return; }
+
+      const emptyCard = cards.findIndex(c => !c.question || !c.answer);
+      if (emptyCard !== -1) {
+        showError('msg', `Карточка ${emptyCard + 1}: заполните вопрос и ответ`);
+        return;
+      }
+      if (cards.length === 0) { showError('msg', 'Добавьте хотя бы одну карточку'); return; }
+
+      const btn = document.getElementById('publish-btn');
+      btn.disabled = true;
+      btn.textContent = 'Сохраняем...';
+
+      try {
+        let result;
+        if (editId) {
+          result = await apiRequest('PUT', '/sets/' + editId, { title, subject, grade, cards });
+        } else {
+          result = await apiRequest('POST', '/sets/', { title, subject, grade, cards, username: getCurrentUser()?.username || '' });
+        }
+        window.location.href = 'set.html?id=' + result.id;
+      } catch (e) {
+        showError('msg', e.message);
+        btn.disabled = false;
+        btn.textContent = editId ? 'Сохранить' : 'Опубликовать';
+      }
+    }
+
+    document.getElementById('publish-btn').addEventListener('click', publish);
+    document.getElementById('publish-btn2').addEventListener('click', publish);
+
+    function escapeAttr(str) {
+      return String(str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>

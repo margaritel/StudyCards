@@ -1,37 +1,143 @@
 # Python
 __pycache__/
+*.py[codz]
+*$py.class
 *.pyc
 *.pyo
-*.egg-info/
-.venv/
-venv/
+*.so
 
-# Env
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django / logs
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook / IPython
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Environments
 .env
 .env.local
 *.env
 !.env.example
+.envrc
+.venv
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# Build / dist
-dist/
-build/
-node_modules/
-
-# OS / IDE
+# IDE / OS
+.spyderproject
+.spyproject
+.ropeproject
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+.idea/
+.vscode/
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
 
-# Logs
-*.log
+# Ruff / cursor / abstra / pixi
+.ruff_cache/
+.pypirc
+.cursorignore
+.cursorindexingignore
+.abstra/
+.pixi
+__pypackages__/
+
+# pdm / marimo / mkdocs
+.pdm-python
+.pdm-build/
+marimo/_static/
+marimo/_lsp/
+__marimo__/
+/site
+
+# Node
+node_modules/
 
 # OpenCode / agents
 opencode.json
 .opencode/
 .claude/
 
-# Local DB / instance
-instance/
+# Local DB
 *.sqlite
 *.db

@@ -1,11 +1,13 @@
-# StudyShare
+# StudyCards / StudyShare
 
-Платформа для обмена учебными карточками. Школьники и студенты создают наборы карточек и делятся ими.
+Карточки для запоминаний. Платформа для обмена учебными карточками: школьники и студенты создают наборы и делятся ими.
+
+[Описание проекта](https://docs.google.com/document/d/1y9ZyheFPgr88VxvDkFa59h4pxbegmJZWTSDW1h6YOKo/edit?usp=sharing)
 
 ## Технологии
 
 - Backend: Python + Flask
-- База данных: PostgreSQL + SQLAlchemy
+- База данных: PostgreSQL + SQLAlchemy (SQLite для локальной разработки)
 - Frontend: HTML + Bootstrap 5 + Vanilla JS
 - Авторизация: JWT
 - Деплой: Docker + Gunicorn + Nginx
@@ -13,11 +15,8 @@
 ## Запуск через Docker (рекомендуется)
 
 ```bash
-# 1. Клонировать репозиторий
-git clone <url>
-cd studyshare
-
-# 2. Запустить
+git clone git@github.com:margaritel/StudyCards.git
+cd StudyCards
 docker-compose up --build
 ```
 
@@ -26,18 +25,13 @@ docker-compose up --build
 ## Запуск локально (без Docker)
 
 ```bash
-# 1. Создать виртуальное окружение
 python -m venv venv
-venv\Scripts\activate   # Windows
-# source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux/Mac
 
-# 2. Установить зависимости
 pip install -r requirements.txt
 
-# 3. Создать базу данных PostgreSQL и настроить .env.local
-# Скопировать .env.local в .env и заменить данные подключения
-
-# 4. Запустить
+# Скопируй .env.example в .env и заполни DATABASE_URL и JWT_SECRET_KEY
 python run.py
 ```
 
@@ -47,14 +41,13 @@ python run.py
 studyshare/
 ├── app/
 │   ├── __init__.py        # Создание Flask приложения
-│   ├── models.py          # Модели базы данных
+│   ├── models.py          # Модели БД
 │   ├── auth.py            # Декораторы авторизации
 │   └── routes/
 │       ├── auth_routes.py # Регистрация и вход
 │       ├── sets_routes.py # CRUD для наборов
 │       └── cards_routes.py
-├── frontend/              # HTML/CSS/JS
-├── .env                   # Переменные окружения
+├── frontend/              # HTML / CSS / JS
 ├── docker-compose.yml
 ├── Dockerfile
 ├── nginx.conf

@@ -4,6 +4,8 @@
 
 [Описание проекта](https://docs.google.com/document/d/1y9ZyheFPgr88VxvDkFa59h4pxbegmJZWTSDW1h6YOKo/edit?usp=sharing)
 
+[Ссылка на выложенный проект](https://studyshare.silaeder.space/)
+
 ## Технологии
 
 - Backend: Python + Flask
